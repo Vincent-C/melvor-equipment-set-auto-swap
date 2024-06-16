@@ -72,7 +72,6 @@ export function setup(ctx) {
             case 'magic':
                 return 'ranged';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type (normal). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
@@ -86,7 +85,6 @@ export function setup(ctx) {
             case 'magic':
                 return 'melee';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type (reversed). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
@@ -99,59 +97,34 @@ export function setup(ctx) {
             // take no action if mod is disabled
             return;
         }
-        
+
         const meleeEquipmentSet = generalSettings.get('meleeEquipmentSet');
         const rangedEquipmentSet = generalSettings.get('rangedEquipmentSet');
         const magicEquipmentSet = generalSettings.get('magicEquipmentSet');
         let desiredEquipmentSetIndex = -1;
-        
+
         const enemyAttackType = game.combat.enemy.attackType;
-        const enemyDamageType = game.combat.enemy.damageType.id;
         const combatTriangleRuleSetInUse = game.combat.combatTriangleSet.id;
-        
-        if (enemyDamageType === 'melvorItA:Eternal') {
-            // I have no idea how this changes the combat triangle and there's no info on the wiki yet
-            notifyPlayer(Player, 'Unrecognized damage type (Eternal). Please disable mod and file a bug report to mod author.', 'danger');
-            game.combat.stop();
-            return;
-        }
-        
+
         let playerAttackType = "unknown";
 
-        if (combatTriangleRuleSetInUse === 'melvorItA:Reversed') {
-            switch (enemyDamageType) {
-                case 'melvorD:Normal':
-                case 'melvorF:Pure':
-                    playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
-                    break;
-                case 'melvorItA:Abyssal':
-                    playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
-                    break;
-                //case 'melvorItA:Eternal': 
-                default:
-                    break;
-            }
-        } else { // combatTriangleRuleSetInUse === 'melvorD:Normal'
-            switch (enemyDamageType) {
-                case 'melvorD:Normal':
-                case 'melvorF:Pure':
-                    playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
-                    break;
-                case 'melvorItA:Abyssal':
-                    playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
-                    break;
-                //case 'melvorItA:Eternal': 
-                default:
-                    break;
-            }
+        switch (combatTriangleRuleSetInUse) {
+            case 'melvorItA:Abyssal':
+                playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
+                break;
+            case 'melvorD:Normal':
+                playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
+                break;
+            default:
+                break;
         }
-        
+
         if (playerAttackType !== 'melee' && playerAttackType !== 'ranged' && playerAttackType !== 'magic') {
             notifyPlayer(Player, 'Unknown player attack type. Please disable mod and file a bug report to mod author.', 'danger');
             game.combat.stop();
             return;
         }
-        
+
         switch (playerAttackType) {
             case 'melee':
                 desiredEquipmentSetIndex = meleeEquipmentSet;
@@ -176,7 +149,7 @@ export function setup(ctx) {
             // no need to switch equipment sets
             return;
         }
-        
+
         game.combat.player.changeEquipmentSet(desiredEquipmentSetIndex);
     });
 }
