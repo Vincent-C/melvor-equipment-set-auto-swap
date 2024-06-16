@@ -113,8 +113,11 @@ export function setup(ctx) {
         }
         
         let playerAttackType = "unknown";
+        
+        // for valid damage types, see `game.damageTypes`
         switch (enemyDamageType) {
             case 'melvorD:Normal':
+            case 'melvorF:Pure':
                 playerAttackType = choosePlayerAttackTypeForNormalDamage(enemyAttackType);
                 break;
             case 'melvorItA:Abyssal':
