@@ -20,7 +20,10 @@ export function setup(ctx) {
             {value: 1, display: '2'},
             {value: 2, display: '3'},
             {value: 3, display: '4'},
-            {value: 4, display: '5'}
+            {value: 4, display: '5'},
+            {value: 5, display: '6'},
+            {value: 6, display: '7'},
+            {value: 7, display: '8'}
         ]
     });
 
@@ -35,7 +38,10 @@ export function setup(ctx) {
             {value: 1, display: '2'},
             {value: 2, display: '3'},
             {value: 3, display: '4'},
-            {value: 4, display: '5'}
+            {value: 4, display: '5'},
+            {value: 5, display: '6'},
+            {value: 6, display: '7'},
+            {value: 7, display: '8'}
         ]
     });
 
@@ -50,7 +56,10 @@ export function setup(ctx) {
             {value: 1, display: '2'},
             {value: 2, display: '3'},
             {value: 3, display: '4'},
-            {value: 4, display: '5'}
+            {value: 4, display: '5'},
+            {value: 5, display: '6'},
+            {value: 6, display: '7'},
+            {value: 7, display: '8'}
         ]
     });
     
