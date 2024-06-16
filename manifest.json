@@ -1,0 +1,5 @@
+{
+	"namespace": "EquipmentSetAutoSwap",
+	"setup": "setup.mjs",
+	"icon": "assets/combat_triangle_reversed.svg"
+}
