@@ -63,7 +63,7 @@ export function setup(ctx) {
         ]
     });
     
-    const choosePlayerAttackTypeForNormalDamage = (enemyAttackType) => {
+    const choosePlayerAttackTypeForNormalCombatTriangle = (enemyAttackType) => {
         switch (enemyAttackType) {
             case 'melee':
                 return 'magic';
@@ -72,12 +72,12 @@ export function setup(ctx) {
             case 'magic':
                 return 'ranged';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type. Please disable mod and file a bug report to mod author.', 'danger');
+                notifyPlayer(Player, 'Unknown enemy attack type (normal). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
     
-    const choosePlayerAttackTypeForAbyssalDamage = (enemyAttackType) => {
+    const choosePlayerAttackTypeForReversedCombatTriangle = (enemyAttackType) => {
         switch (enemyAttackType) {
             case 'melee':
                 return 'ranged';
@@ -86,12 +86,15 @@ export function setup(ctx) {
             case 'magic':
                 return 'melee';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type. Please disable mod and file a bug report to mod author.', 'danger');
+                notifyPlayer(Player, 'Unknown enemy attack type (reversed). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
 
     ctx.patch(CombatManager, 'spawnEnemy').after((result) => {
+        // for all valid damage types, see `game.damageTypes`
+        // for all valid combat triangle rulesets, see `game.combatTriangleSets`
+
         if (!generalSettings.get('equipmentSetAutoSwapEnabled')) {
             // take no action if mod is disabled
             return;
@@ -104,6 +107,7 @@ export function setup(ctx) {
         
         const enemyAttackType = game.combat.enemy.attackType;
         const enemyDamageType = game.combat.enemy.damageType.id;
+        const combatTriangleRuleSetInUse = game.combat.combatTriangleSet.id;
         
         if (enemyDamageType === 'melvorItA:Eternal') {
             // I have no idea how this changes the combat triangle and there's no info on the wiki yet
@@ -113,19 +117,33 @@ export function setup(ctx) {
         }
         
         let playerAttackType = "unknown";
-        
-        // for valid damage types, see `game.damageTypes`
-        switch (enemyDamageType) {
-            case 'melvorD:Normal':
-            case 'melvorF:Pure':
-                playerAttackType = choosePlayerAttackTypeForNormalDamage(enemyAttackType);
-                break;
-            case 'melvorItA:Abyssal':
-                playerAttackType = choosePlayerAttackTypeForAbyssalDamage(enemyAttackType);
-                break;
-            //case 'melvorItA:Eternal': 
-            default:
-                break;
+
+        if (combatTriangleRuleSetInUse === 'melvorItA:Reversed') {
+            switch (enemyDamageType) {
+                case 'melvorD:Normal':
+                case 'melvorF:Pure':
+                    playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
+                    break;
+                case 'melvorItA:Abyssal':
+                    playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
+                    break;
+                //case 'melvorItA:Eternal': 
+                default:
+                    break;
+            }
+        } else { // combatTriangleRuleSetInUse === 'melvorD:Normal'
+            switch (enemyDamageType) {
+                case 'melvorD:Normal':
+                case 'melvorF:Pure':
+                    playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
+                    break;
+                case 'melvorItA:Abyssal':
+                    playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
+                    break;
+                //case 'melvorItA:Eternal': 
+                default:
+                    break;
+            }
         }
         
         if (playerAttackType !== 'melee' && playerAttackType !== 'ranged' && playerAttackType !== 'magic') {
