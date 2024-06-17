@@ -62,7 +62,7 @@ export function setup(ctx) {
             {value: 7, display: '8'}
         ]
     });
-    
+
     const choosePlayerAttackTypeForNormalCombatTriangle = (enemyAttackType) => {
         switch (enemyAttackType) {
             case 'melee':
@@ -72,11 +72,10 @@ export function setup(ctx) {
             case 'magic':
                 return 'ranged';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type (normal). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
-    
+
     const choosePlayerAttackTypeForReversedCombatTriangle = (enemyAttackType) => {
         switch (enemyAttackType) {
             case 'melee':
@@ -86,7 +85,6 @@ export function setup(ctx) {
             case 'magic':
                 return 'melee';
             default:
-                notifyPlayer(Player, 'Unknown enemy attack type (reversed). Please disable mod and file a bug report to mod author.', 'danger');
                 return 'unknown';
         }
     };
@@ -106,26 +104,17 @@ export function setup(ctx) {
         let desiredEquipmentSetIndex = -1;
 
         const enemyAttackType = game.combat.enemy.attackType;
-        const enemyDamageType = game.combat.enemy.damageType.id;
-
-        if (enemyDamageType === 'melvorItA:Eternal') {
-            // I have no idea how this changes the combat triangle and there's no info on the wiki yet
-            notifyPlayer(Player, 'Unrecognized damage type (Eternal). Please disable mod and file a bug report to mod author.', 'danger');
-            game.combat.stop();
-            return;
-        }
+        const combatTriangleRuleSetInUse = game.combat.combatTriangleSet.id;
 
         let playerAttackType = "unknown";
 
-        switch (enemyDamageType) {
-            case 'melvorItA:Abyssal':
+        switch (combatTriangleRuleSetInUse) {
+            case 'melvorItA:Reversed':
                 playerAttackType = choosePlayerAttackTypeForReversedCombatTriangle(enemyAttackType);
                 break;
             case 'melvorD:Normal':
-            case 'melvorF:Pure':
                 playerAttackType = choosePlayerAttackTypeForNormalCombatTriangle(enemyAttackType);
                 break;
-            //case 'melvorItA:Eternal': 
             default:
                 break;
         }
